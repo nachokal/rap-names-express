@@ -15,7 +15,8 @@ MongoClient.connect(dbConnectionStr, { useUnifiedTopology: true })
         db = client.db(dbName)
     })
     
-app.set('view engine', 'ejs')
+app.set('view engine', 'pug')
+app.set('views', './views')
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -24,7 +25,7 @@ app.use(express.json())
 app.get('/',(request, response)=>{
     db.collection('rappers').find().sort({likes: -1}).toArray()
     .then(data => {
-        response.render('index.ejs', { info: data })
+        response.render('index.pug', { info: data })
     })
     .catch(error => console.error(error))
 })
@@ -40,7 +41,8 @@ app.post('/addRapper', (request, response) => {
 })
 
 app.put('/addOneLike', (request, response) => {
-    db.collection('rappers').updateOne({stageName: request.body.stageNameS, birthName: request.body.birthNameS,likes: request.body.likesS},{
+    console.log(request.body)
+    db.collection('rappers').updateOne({stageName: request.body.stageNameS, birthName: request.body.birthNameS, likes: request.body.likesS},{
         $set: {
             likes:request.body.likesS + 1
           }
